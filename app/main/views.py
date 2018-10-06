@@ -51,3 +51,15 @@ def addAccount():
         return '', 201, {'Location': '/accounts/' + account_full_name[0]}
     except KeyError:
         return '', 400
+
+@main.route('/accounts/<account_full_name>', methods=['GET'])
+def getAccount(account_full_name):
+    conn = db.get_db()
+    cur = conn.cursor()
+    account_full_name = trim_account_name(account_full_name)
+    cur.execute('SELECT COUNT(*) FROM public.account WHERE full_name = %s;', (account_full_name, ))
+    count = cur.fetchone()
+    if count[0] is 0:
+        return '', 404
+    cur.close()
+    return jsonify(accountFullName=account_full_name), 200
