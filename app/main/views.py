@@ -63,3 +63,12 @@ def getAccount(account_full_name):
         return '', 404
     cur.close()
     return jsonify(accountFullName=account_full_name), 200
+
+@main.route('/accounts/<account_full_name>', methods=['DELETE'])
+def deleteAccount(account_full_name):
+    conn = db.get_db()
+    cur = conn.cursor()
+    account_full_name = trim_account_name(account_full_name)
+    cur.execute('SELECT public.delete_account(%s);', (account_full_name, ))
+    conn.commit()
+    cur.close()
